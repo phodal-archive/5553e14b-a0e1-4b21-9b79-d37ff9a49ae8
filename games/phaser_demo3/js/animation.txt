@@ -1,0 +1,50 @@
+var SmartCity = SmartCity || {};
+
+//title screen
+SmartCity.Game = function(){};
+var group1;
+var group2;
+SmartCity.Game.prototype = {
+  create: function() {
+  	
+    //background
+	
+	this.ground=this.add.sprite(5, 7, 'ground',4);
+	//this.ground.setAll('body.immovable', true);//fixed ground
+	var house1=this.add.sprite(300, 378,'house1',6);
+	var house2=this.add.sprite(400, 417,'house1',6);
+	//this.house01.scale.set(2);
+	//this.house01.smoothed=false;
+	
+	anim=house1.animations.add('ligtup1',[1,2]);
+	anim1=house2.animations.add('ligtup1',[2,3]);
+    //house.animations.play('lightp',50,true);
+	anim.play(1000,true);
+	anim1.play(1000,true);
+	
+	//this.house01.scale.set(2);
+	//this.house01.smoothed=false;
+	
+    //player initial score of zero
+    this.playerScore = 0;
+
+    //enable player physics
+   // this.game.physics.arcade.enable(this.house01);
+    //this.playerSpeed = 10;
+    //this.player.body.collideWorldBounds = true;
+
+    //the camera will follow the player in the world
+   // this.game.camera.follow(this.house01);
+
+    
+    
+
+    //sounds
+    
+  },
+  update: function() {
+   
+  
+}
+
+};

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Phaser Examples</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: monospace;
+  background-color: #ffffff;
+}
+
+.wrapper {
+  
+}
+
+#game-list {
+
+}
+
+.game-wrap {
+  word-wrap: break-word;
+  margin-bottom: 30px;
+}
+
+.game-wrap.notplayable .game:after {
+  content: 'Bug';
+  z-index: 3;
+  position: absolute;
+  right: 0;
+  background-color: red;
+  color: #fff;
+  padding: 6px;
+}
+
+.game {
+  min-height: 638px;
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.link-wrap {
+  width: 100%;
+  height: 438px;
+  display: block;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+.screenshot {
+  height: 438px;
+  display: block;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+}
+
+.meta {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, .8);
+  color: #fff;
+  padding: 12px;
+}
+
+.links {
+  display: table;
+}
+
+.links li {
+  list-style: none;
+}
+
+.links li a {
+  display: block;
+  color: #337ab7;
+}
+
+.links li a:hover {
+  color: #337ab7;
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<div class="container wrapper">
+  <div class="row">
+    <h2 class="logo">Phaser Examples</h2>
+    <hr>
+    <div id="game-list"></div>
+  </div>
+</div>
+<script id="game-template" type="text/x-handlebars-template">
+  {{#each games}}
+    <div id="game-{{id}}" class="col-md-6 game-wrap {{#unless isPlayable}}notplayable{{/unless}}">
+      <div class="game">
+        <div class="screenshot"
+          {{#if screenshots.[0]}}
+            style="background-image: url('{{screenshots.[0]}}');"
+          {{/if}}
+        >
+          &nbsp;
+        </div><!-- .screenshot -->
+
+        {{#if demos.[0]}}
+          <a class="link-wrap"
+            target="_blank"
+            href="{{demos.[0]}}">
+            &nbsp;
+          </a>
+        {{/if}}
+
+        <div class="meta">
+          <div class="name">{{name}}</div>
+          <div class="desc">{{description}}</div>
+          <div class="version">Phaser version: {{phaserVersion}}</div>
+          <ul class="links">
+            {{#each demos}}
+              <li class="demo"><a href="{{this}}" target="_blank">{{this}}</a></li>
+            {{/each}}
+
+            {{#each inspirations}}
+              <li class="inspiration"><a href="{{this}}" target="_blank">{{this}}</a></li>
+            {{/each}}
+
+            {{#each references}}
+              <li class="reference"><a href="{{this}}" target="_blank">{{this}}</a></li>
+            {{/each}}
+
+            {{#each tags}}
+              <li class="tag"><a href="{{this}}" target="_blank">{{this}}</a></li>
+            {{/each}}
+          </ul>
+        </div><!-- .meta -->
+      </div>
+    </div>
+  {{/each}}
+  </div>
+</script>
+<script src="games.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+<script>
+function isLocal() {
+  return (window.location.host === 'localhost:8001');
+}
+
+Handlebars.registerHelper('list', function(items, options) {
+  var out = '<ul>';
+  for (var i = 0, l = items.length; i < l; i++) {
+    out = out + '<li>' + options.fn(items[i]) + '</li>';
+  }
+
+  return out + '</ul>';
+});
+
+// Setup `games` variable for demo purpose
+var nGames = games.length,
+  i = 0,
+  j = 0;
+
+var screenshotsHostName = isLocal()
+  ? 'https://raw.githubusercontent.com/jojoee/phaser-examples/gh-pages'
+  : 'https://raw.githubusercontent.com/jojoee/phaser-examples/gh-pages';
+screenshotsHostName += '/screenshots/';
+
+var gameHostname = isLocal()
+  ? 'http://localhost:8001'
+  : 'http://jojoee.github.io/phaser-examples';
+gameHostname += '/games/';
+
+for (i = 0; i < nGames; i++) {
+  // Screenshots
+  var nScreenshots = games[i].screenshots.length;
+  for (j = 0; j < nScreenshots; j++) {
+    games[i].screenshots[j] = screenshotsHostName + games[i].screenshots[j];
+  }
+
+  // Demos
+  var selfHostDemo = gameHostname + games[i].id;
+  games[i].demos.push(selfHostDemo);
+}
+
+var source = document.getElementById('game-template').innerHTML,
+  template = Handlebars.compile(source),
+  context = {games: games},
+  html = template(context),
+  gameListEle = document.getElementById('game-list');
+
+gameListEle.innerHTML = html;
+</script>
+</body>
+</html>
