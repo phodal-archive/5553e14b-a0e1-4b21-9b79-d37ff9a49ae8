@@ -1394,9 +1394,7 @@ var games = [
     ],
     'tags': [],
     'inspirations': [],
-    'demos': [
-      'http://www.thinkfun.com/play-online/rush-hour/'
-    ]
+    'demos': []
   },
   {
     'id': 'santa-on-the-run',
@@ -1758,9 +1756,7 @@ var games = [
     'inspirations': [
       'https://itunes.apple.com/us/app/the-next-arrow/id951476189'
     ],
-    'demos': [
-      'https://www.youtube.com/watch?v=NhvY3LOUZ3E'
-    ]
+    'demos': []
   },
   {
     'id': 'the-three-hearths',
