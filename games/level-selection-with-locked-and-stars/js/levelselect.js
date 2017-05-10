@@ -9,6 +9,10 @@ var leftArrow;
 var rightArrow;
 levelSelect = {
   create: function() {
+    if (!startGame) {
+      startGame = true
+      alert("Start the game!!");
+    }
     // how many pages are needed to show all levels?
     // CAUTION!! EACH PAGE SHOULD HAVE THE SAME AMOUNT OF LEVELS, THAT IS
     // THE NUMBER OF LEVELS *MUST* BE DIVISIBLE BY THUMBCOLS*THUMBROWS

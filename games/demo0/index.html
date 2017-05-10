@@ -18,10 +18,10 @@
             // initialize the framework
             var game = new Phaser.Game(640, 960, Phaser.AUTO, 'game');
             // add game states
-            game.state.add('Boot', SSIS.Boot);
-            game.state.add('Preloader', SSIS.Preloader);
-            game.state.add('MainMenu', SSIS.MainMenu);
-            game.state.add('Game', SSIS.Game);
+            game.state.add('Boot', SONGSINH.Boot);
+            game.state.add('Preloader', SONGSINH.Preloader);
+            game.state.add('MainMenu', SONGSINH.MainMenu);
+            game.state.add('Game', SONGSINH.Game);
             // start the Boot state
             game.state.start('Boot');
         })();

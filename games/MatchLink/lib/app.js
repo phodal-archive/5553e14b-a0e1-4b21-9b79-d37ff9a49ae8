@@ -199,6 +199,7 @@ $(document).ready(function(){
 	//Timer
 	function startTimer(level)
 	{
+		return;
 		setInterval(function()
 		{
 			if(timer > 0 && !$('.slideLeft').length)
@@ -389,6 +390,7 @@ $(document).ready(function(){
 	//Pathfinder
 	function checkPath(elem1, elem2, startX, endX, startY, endY)
 	{
+		alert('');
 		grid.setWalkableAt(startX,startY,true);	//Make both cells walkable for pathfinder
 		grid.setWalkableAt(endX,endY,true);
 
