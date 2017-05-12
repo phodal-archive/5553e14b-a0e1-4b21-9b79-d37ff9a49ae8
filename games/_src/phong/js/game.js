@@ -1,6 +1,6 @@
 var game;
 var menuGroup;
-window.onload = function() {
+window.onload = function () {
   game = new Phaser.Game(640, 960);
   game.state.add("StateInit", stateInit);
   game.state.add("StateLoad", stateLoad);
@@ -25,23 +25,23 @@ window.onload = function() {
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
-var stateInit = function(game) {};
+var stateInit = function (game) { };
 stateInit.prototype = {
-  preload: function() {
+  preload: function () {
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.setScreenSize = true;
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
     game.stage.backgroundColor = "#020028";
   },
-  create: function() {
+  create: function () {
     game.state.start("StateLoad");
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
-var stateLoad = function(game) {};
+var stateLoad = function (game) { };
 stateLoad.prototype = {
-  preload: function() {
+  preload: function () {
     game.load.image("gametitle", "assets/sprites/gametitle.png");
     game.load.image("gridedition", "assets/sprites/gridedition.png");
     game.load.image("playbutton", "assets/sprites/playbutton.png");
@@ -49,19 +49,19 @@ stateLoad.prototype = {
     game.load.image("resetgame", "assets/sprites/resetgame.png");
     game.load.image("thankyou", "assets/sprites/thankyou.png");
   },
-  create: function() {
+  create: function () {
     game.state.start("StateHome");
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
-var stateHome = function(game) {}
+var stateHome = function (game) { }
 stateHome.prototype = {
-  create: function() {
+  create: function () {
     var title = game.add.sprite(game.width / 2, 60, "gametitle");
     title.anchor.set(0.5);
     var grid = game.add.sprite(game.width / 2, 130, "gridedition");
     grid.anchor.set(0.5);
-    var playButton = game.add.button(game.width / 2, game.height / 2 + 100, "playbutton", function() {
+    var playButton = game.add.button(game.width / 2, game.height / 2 + 100, "playbutton", function () {
       game.state.start("LevelSelect");
     });
     playButton.anchor.set(0.5);
@@ -69,10 +69,10 @@ stateHome.prototype = {
     var menuButton = game.add.button(game.width / 2, game.height - 30, "menubutton", toggleMenu);
     menuButton.anchor.set(0.5);
     menuGroup.add(menuButton);
-    var resetGame = game.add.button(game.width / 2, game.height + 50, "resetgame", function() {});
+    var resetGame = game.add.button(game.width / 2, game.height + 50, "resetgame", function () { });
     resetGame.anchor.set(0.5);
     menuGroup.add(resetGame);
-    var thankYou = game.add.button(game.width / 2, game.height + 130, "thankyou", function() {});
+    var thankYou = game.add.button(game.width / 2, game.height + 130, "thankyou", function () { });
     thankYou.anchor.set(0.5);
     menuGroup.add(thankYou);
   }
@@ -90,27 +90,27 @@ function toggleMenu() {
   }
 }
 ////////////////////////////////////////////////////////////////////////////////
-var levelSelect = function(game) {
+var levelSelect = function (game) {
   var pages;
   var levelThumbsGroup;
   var currentPage;
   var leftArrow;
-  var rightArrow;  
+  var rightArrow;
   startGame = false;
 };
 levelSelect.prototype = {
-  preload: function() {
+  preload: function () {
     game.load.spritesheet("levels", "assets/sprites/levelselect/levels.png", game.global.thumbWidth, game.global.thumbHeight);
     game.load.spritesheet("level_arrows", "assets/sprites/levelselect/level_arrows.png", 48, 48);
     game.load.spritesheet("game_content", "assets/sprites/levelselect/game.png", 200, 80);
     game.load.spritesheet("back_splash", "assets/sprites/levelselect/btnExit.png", 170, 76);
   },
-  create: function() {
+  create: function () {
     if (!startGame) {
       startGame = true
       //alert("Start the game!!");
     }
-    backSplash = game.add.button(game.width / 2, 520, "back_splash",  function() {game.state.start("StateHome");}, this, 1, 0, 1);
+    backSplash = game.add.button(game.width / 2, 520, "back_splash", function () { game.state.start("StateHome"); }, this, 1, 0, 1);
     backSplash.anchor.setTo(0.5);
 
     // how many pages are needed to show all levels?
@@ -180,7 +180,7 @@ levelSelect.prototype = {
     // scrolling thumbnails group according to level position
     levelThumbsGroup.x = currentPage * game.width * -1
   },
-  arrowClicked: function(button) {
+  arrowClicked: function (button) {
     // touching right arrow and still not reached last page
     if (button.frame == 1 && currentPage < pages - 1) {
       leftArrow.alpha = 1;
@@ -212,7 +212,7 @@ levelSelect.prototype = {
       buttonsTween.start();
     }
   },
-  thumbClicked: function(button) {
+  thumbClicked: function (button) {
     // the level is playable, then play the level!!
     if (button.frame < 4) {
       game.global.level = button.levelNumber;
@@ -239,7 +239,7 @@ levelSelect.prototype = {
 }
 ////////////////////////////////////////////////////////////////////////////////
 var playLevel = {
-  create: function() {
+  create: function () {
     // showing level title
     var style = {
       font: "32px Arial",
@@ -255,7 +255,7 @@ var playLevel = {
       gameThumb.frame = i;
     }
   },
-  levelFinished: function(button) {
+  levelFinished: function (button) {
     // did we improved our stars in current level?
     if (game.global.starsArray[game.global.level - 1] < button.frame) {
       game.global.starsArray[game.global.level - 1] = button.frame;
