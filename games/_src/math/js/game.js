@@ -274,12 +274,12 @@ window.onload = function () {
                 mixed: false
             },
             {
-                inType: 1,
+                inType: 1, // hieu ung cua Tween - unused
                 columns: 5,
                 rows: 5,
                 stars: [1, 2, 3],
                 nums: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                opsRatio: 10 / 6,
+                opsRatio: 10 / 6, // ty le dau (+,-,x,/) trong bieu thuc
                 range: [0, 100],
                 templates: ['_o_', '_o_o_'],
                 fitTemplate: true,
@@ -523,13 +523,20 @@ levelSelect.prototype = {
 }
 ////////////////////////////////////////////////////////////////////////////////
 var levelPlay = function (game) {
-
+    var levelData;
+    var actTemplate;
+    var actMatch;
+    var actResult;
 };
 levelPlay.prototype = {
     create: function () {
+        var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
         backgroundgradient(game);
         debugger;
         var xxx = this.initBoard();
+        actMatch = 0;
+        actResult = 0;
+        actTemplate = levelData.killMode ? levelData.templates[actMatch%levelData.templates.length] : levelData.templates[Math.floor(Math.random()*levelData.templates.length)];
         var yyy = this.getRandomResult(null, xxx.nb);
         var starResultButton = game.add.button((w - 138) / 2, 690, 'window_title_1', function () {
         });
@@ -571,8 +578,8 @@ levelPlay.prototype = {
         var min = levelData.range ? levelData.range[0] : 0;
         var max = levelData.range ? levelData.range[1] : 100;
         var value = 0;
-        for (var i = 0; i < actTemplate.length; i++) {
-            var tempChar = actTemplate.charAt(i);
+        for (var i = 0; i < this.actTemplate.length; i++) {
+            var tempChar = this.actTemplate.charAt(i);
             if (tempChar == '_') {
                 var tempN = nums.splice(Math.floor(Math.random() * nums.length), 1)[0];
                 tempExp += tempN;
@@ -592,7 +599,7 @@ levelPlay.prototype = {
             }
         }
         value = value || evalExpr(tempExp)
-        if ((value < min || value > max || value == 0 || value == result.value) && pos < 1000) {
+        if ((value < min || value > max || value == 0 || value == actResult) && pos < 1000) {
             value = getRandomResult(pos + 1);
         }
         else {

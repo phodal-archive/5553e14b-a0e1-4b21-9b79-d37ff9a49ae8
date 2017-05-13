@@ -70,10 +70,12 @@ var astar = {
       // End case -- result has been found, return the traced path.
       if (currentNode === end) {
                 for (var l = 0, u = currentNode, c = []; u.parent;) {
-                    if (l += astar.isTurn(u.parent, u) ? 1 : 0, l > 4) return s ? [] : astar.search(graph, end, start, options, !0);
+                    if (l += astar.isTurn(u.parent, u) ? 1 : 0, l > 2) return s ? [] : astar.search(graph, end, start, options, !0);
                     u = u.parent
                 }
-        return pathTo(currentNode);
+        var res = pathTo(currentNode);
+        if (s) return res.reverse();
+        else return res;
       }
 
       // Normal case -- move currentNode from open to closed, process each of its neighbors.

@@ -112,7 +112,7 @@ Cifras.Game = (function(){
 
 	function addCharToExpr(newChar,charType){
 		var ended = false;
-
+debugger;
 		if(levelData.fitTemplate){
 			while(actPos < actTemplate.length && '( )'.indexOf(actTemplate.charAt(actPos)) != -1){
 				actPos++;
@@ -163,7 +163,7 @@ Cifras.Game = (function(){
 	}
 
 	function getRandomResult(pos){
-		debugger;
+		//debugger;
 		var pos = pos || 0;
 		var tempExp = '';
 		var nums = Cifras.boardValues.nums.slice();
@@ -225,7 +225,7 @@ Cifras.Game = (function(){
 	};
 
 	function initMatch(){
-		debugger;
+		//debugger;
 		var actObj = matchesContainer.children[actMatch];
 	
 		if(actObj){
