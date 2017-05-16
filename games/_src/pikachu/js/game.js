@@ -121,7 +121,8 @@ preload.prototype = {
         game.load.image("btn_big_menu_exit_brown", "assets/PNG24@1x/btn_big_menu_exit_brown.png");
         game.load.image("btn_medium_arrow_left_green", "assets/PNG24@1x/btn_medium_arrow_left_green.png");
         game.load.image("btn_medium_arrow_right_green", "assets/PNG24@1x/btn_medium_arrow_right_green.png");
-        game.load.spritesheet("element_button_level", "assets/PNG24@1x/element_button_level_full.png", 53, 57);
+        game.load.spritesheet("left_right", "assets/sprites/left_right.png", 42, 42);
+        game.load.spritesheet("element_button_level", "assets/sprites/element_button_level_full.png", 53, 57);
         game.load.image("window_panel_level", "assets/PNG24@1x/window_panel_level.png");
         game.load.spritesheet("game_content", "assets/game.png", 200, 80);
         //for game
@@ -388,18 +389,7 @@ levelPlay.prototype = {
     }
 }
 function runBasic(matrix, x1, y1, x2, y2) {
-    debugger;
-    var graph = new Graph(matrix);
-    var start = graph.grid[x1][y1];
-    var end = graph.grid[x2][y2];
-    var result = astar.search(graph, start, end,{}, !1);
+    var a = new AStar.Graph(matrix);
+    result = AStar.astar.search(a.nodes, a.nodes[x1][y1], a.nodes[x2][y2], 2, !1);
     return result;
 }
-function runBasic1(matrix, x1, y1, x2, y2) {
-    debugger;
-    var graph = new Graph(matrix);
-    var start = {}; start.x = x1; start.y = y1;
-    var end = {}; end.x = x2; end.y = y2;
-    var result = findPath(matrix, start, end);
-    return result;
-}   

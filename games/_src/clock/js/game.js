@@ -8,7 +8,8 @@ window.onload = function () {
         x = w.innerWidth || e.clientWidth || g.clientWidth,
         y = w.innerHeight || e.clientHeight || g.clientHeight;
     //game = new Phaser.Game(640, Math.round(640 * e.clientHeight / e.clientWidth));
-    game = new Phaser.Game(640, 960);
+    var l = 2, m = 3, n = 320;
+    game = new Phaser.Game(n * l, Math.round(n * l * e.clientHeight / e.clientWidth));
     game.state.add("Boot", boot);
     game.state.add("Preload", preload);
     game.state.add("Home", home);
@@ -115,9 +116,13 @@ preload.prototype = {
         game.load.image("window_panel_main", "assets/PNG24@1x/window_panel_main.png");
         game.load.image("window_title_1", "assets/PNG24@1x/window_title_1.png");
         game.load.image("btn_text_brown", "assets/PNG24@1x/btn_text_brown.png");
+        game.load.image("btn_big_menu_home_brown", "assets/PNG24@1x/btn_big_menu_home_brown.png");
+        game.load.image("btn_big_arrow_up_brown", "assets/PNG24@1x/btn_big_arrow_up_brown.png");
+        game.load.image("btn_big_menu_exit_brown", "assets/PNG24@1x/btn_big_menu_exit_brown.png");
         game.load.image("btn_medium_arrow_left_green", "assets/PNG24@1x/btn_medium_arrow_left_green.png");
         game.load.image("btn_medium_arrow_right_green", "assets/PNG24@1x/btn_medium_arrow_right_green.png");
-        game.load.spritesheet("element_button_level", "assets/PNG24@1x/element_button_level_full.png", 53, 57);
+        game.load.spritesheet("left_right", "assets/sprites/left_right.png", 42, 42);
+        game.load.spritesheet("element_button_level", "assets/sprites/element_button_level_full.png", 53, 57);
         game.load.image("window_panel_level", "assets/PNG24@1x/window_panel_level.png");
         game.load.spritesheet("game_content", "assets/game.png", 200, 80);
         //for game
@@ -127,8 +132,7 @@ preload.prototype = {
         game.load.spritesheet("bighand", "assets/sprites/bighand.png", 140, 140);
         game.load.image("smallclockface", "assets/sprites/smallclockface.png");
         game.load.image("bigclockface", "assets/sprites/bigclockface.png");
-        game.load.image("ball", "assets/sprites/ball.png");
-    },
+        game.load.image("ball", "assets/sprites/ball.png");    },
     create: function () {
         game.state.start("Home");
     }
@@ -142,47 +146,44 @@ home.prototype = {
         mainmenu(game);
     }
 }
-function backgroundgradient(game) {
-    var bmp = game.add.bitmapData(game.width, game.height);
-    var grd = bmp.context.createLinearGradient(0, 0, 0, game.height);
-    grd.addColorStop(0, "#EF5091");
-    grd.addColorStop(1, "white");
-    bmp.context.fillStyle = grd;
-    bmp.context.fillRect(0, 0, game.width, game.height);
-    var lol = game.add.sprite(0, 0, bmp);
-    lol.alpha = 0;
-    game.add.tween(lol).to({ alpha: 1 }, 2000).start();
-}
 function backgroundimage(game) {
     var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
-    game.add.sprite(0, h - 191 - 100, 'background_clouds');
-    game.add.sprite(0, h - 191, 'background_scene1');
-    game.add.sprite((w - 425) / 2, -100, 'element_rays');
-    game.add.sprite((w - 350) / 2, 130, 'element_ribbon');
-    game.add.sprite((w - 204) / 2, 0, 'element_board_title');
-    game.add.text((w - 204) / 2 + 50, 95, 'CLOCK', { font: "32px Arial", fill: "#ffffff" });
+    game.add.sprite(0, h - isize('background_scene1').h - isize('background_clouds').h / 2, 'background_clouds');
+    game.add.sprite(0, h - isize('background_scene1').h, 'background_scene1');
+    game.add.sprite((w - isize('element_rays').w) / 2, -isize('element_board_title').h / 2, 'element_rays');
+    game.add.sprite((w - isize('element_ribbon').w) / 2, 130, 'element_ribbon');
+    var gametitleboard = game.add.sprite((w - isize('element_board_title').w) / 2, 0, 'element_board_title');
+    var gametitle = game.add.text(0, 95, 'PIKACHU', { font: "32px Arial", fill: "#ffffff" });
+    gametitle.x = gametitleboard.width / 2 - gametitle.width / 2;
+    gametitleboard.addChild(gametitle);
 }
 function mainmenu(game) {
     var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
-    var window_panel_main = game.add.sprite((w - 200) / 2, 500, 'window_panel_main');
-    var window_title_1 = game.add.sprite((w - 138) / 2, 490, 'window_title_1');
-    var text0 = game.add.text(40, 5, 'MENU', { font: "20px Arial", fill: "#ffffff" });
+    var window_panel_main = game.add.sprite((w - isize('window_panel_main').w) / 2, isize('window_panel_level').h, 'window_panel_main');
+    var window_title_1 = game.add.sprite((isize('window_panel_main').w - isize('window_title_1').w) / 2, - 10, 'window_title_1');
+    window_panel_main.addChild(window_title_1);
+    var text0 = game.add.text(0, 5, 'MENU', { font: "20px Arial", fill: "#ffffff" });
     window_title_1.addChild(text0);
-    var playButton = game.add.button((w - 150) / 2, h2 + 50, "btn_text_brown", function () {
+    text0.x = window_title_1.width / 2 - text0.width / 2;
+
+    var playButton = game.add.button((w - isize('btn_text_brown').w) / 2, window_panel_main.y + 35, "btn_text_brown", function () {
         game.state.start("LevelSelect");
     });
-    var text1 = game.add.text(50, 10, "Play", { font: "22px Arial", fill: "#ffffff" });
+    var text1 = game.add.text(0, 10, "Play", { font: "22px Arial", fill: "#ffffff" });
     playButton.addChild(text1);
-    var highscoreButton = game.add.button((w - 150) / 2, h2 + 100, "btn_text_brown", function () {
+    text1.x = playButton.width / 2 - text1.width / 2;
+    var highscoreButton = game.add.button((w - isize('btn_text_brown').w) / 2, playButton.y + 50, "btn_text_brown", function () {
         alert("highscore");
     });
     var text2 = game.add.text(30, 10, "Highscore", { font: "22px Arial", fill: "#ffffff" });
     highscoreButton.addChild(text2);
-    var settingButton = game.add.button((w - 150) / 2, h2 + 150, "btn_text_brown", function () {
+    text2.x = highscoreButton.width / 2 - text2.width / 2;
+    var settingButton = game.add.button((w - isize('btn_text_brown').w) / 2, highscoreButton.y + 50, "btn_text_brown", function () {
         alert("setting here");
     });
     var text3 = game.add.text(40, 10, "Setting", { font: "22px Arial", fill: "#ffffff" });
     settingButton.addChild(text3);
+    text3.x = settingButton.width / 2 - text3.width / 2;
 }
 ////////////////////////////////////////////////////////////////////////////////
 var levelSelect = function (game) {
@@ -195,6 +196,7 @@ var levelSelect = function (game) {
     }
     var pages;
     var levelThumbsGroup;
+    var window_panel_level;
     var currentPage;
     var leftArrow;
     var rightArrow;
@@ -206,36 +208,22 @@ levelSelect.prototype = {
 
         var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
 
-        var window_panel_level = game.add.sprite((w - 295) / 2, 235, 'window_panel_level');
-
-        var backHomeButton = game.add.button((w - 138) / 2, 690, 'window_title_1', function () {
+        var backHomeButton = game.add.button(20, 20, 'btn_big_menu_home_brown', function () {
             game.state.start("Home");
         });
-        var text0 = game.add.text(40, 5, 'HOME', { font: "20px Arial", fill: "#ffffff" });
-        backHomeButton.addChild(text0);
 
+        var ml = isize('window_panel_level').w;
         pages = game.global.starsArray.length / (this.starBoard.thumbRows * this.starBoard.thumbCols);
         currentPage = Math.floor(game.global.level / (this.starBoard.thumbRows * this.starBoard.thumbCols));
         if (currentPage > pages - 1) {
             currentPage = pages - 1;
         }
-        leftArrow = game.add.button(-20, window_panel_level.height / 2 - 20, "btn_medium_arrow_left_green", this.leftarrowClicked, this);
-        if (currentPage == 0) {
-            leftArrow.alpha = 0.5;
-        }
-        window_panel_level.addChild(leftArrow);
-        rightArrow = game.add.button(window_panel_level.width - 20, window_panel_level.height / 2 - 20, "btn_medium_arrow_right_green", this.rightarrowClicked, this);
-        if (currentPage == pages - 1) {
-            rightArrow.alpha = 0.5;
-        }
-        window_panel_level.addChild(rightArrow);
 
         levelThumbsGroup = game.add.group();
-        window_panel_level.addChild(levelThumbsGroup);
         var levelWidth = this.starBoard.thumbWidth * this.starBoard.thumbCols + this.starBoard.thumbSpacing * (this.starBoard.thumbCols - 1);
         var levelHeight = this.starBoard.thumbWidth * this.starBoard.thumbRows + this.starBoard.thumbSpacing * (this.starBoard.thumbRows - 1);
         for (var l = 0; l < pages; l++) {
-            var offsetX = (295 - levelWidth) / 2 + game.width * l;
+            var offsetX = (295 - levelWidth) / 2 + ml * l;
             var offsetY = 15;
             for (var i = 0; i < this.starBoard.thumbRows; i++) {
                 for (var j = 0; j < this.starBoard.thumbCols; j++) {
@@ -249,48 +237,65 @@ levelSelect.prototype = {
                             font: "22px Arial",
                             fill: "#ffffff"
                         };
-                        var levelText = game.add.text(levelThumb.width / 2 - 8, levelThumb.height / 2 - 15, levelNumber + 1, style);
+                        var levelText = game.add.text(0, 0, levelNumber + 1, style);
                         levelText.setShadow(2, 2, 'rgba(0,0,0,0.5)', 1);
                         levelThumb.addChild(levelText);
+                        levelText.x = (levelThumb.width - levelText.width) / 2;
+                        levelText.y = (levelThumb.height - levelText.height) / 2;
                         //levelThumbsGroup.add(levelText);
                     }
                 }
             }
         }
         // scrolling thumbnails group according to level position
-        levelThumbsGroup.x = currentPage * game.width * -1
+        levelThumbsGroup.x = currentPage * ml * -1
+
+        window_panel_level = game.add.sprite((w - isize('window_panel_level').w) / 2, isize('window_panel_level').h, 'window_panel_level');
+        leftArrow = game.add.button(-20, window_panel_level.height / 2 - 20, "left_right", this.leftarrowClicked, this);
+        leftArrow.frame = 0;
+        if (currentPage == 0) {
+            leftArrow.frame = 1;
+        }
+        window_panel_level.addChild(leftArrow);
+        rightArrow = game.add.button(window_panel_level.width - 20, window_panel_level.height / 2 - 20, "left_right", this.rightarrowClicked, this);
+        rightArrow.frame = 2;
+        if (currentPage == pages - 1) {
+            rightArrow.frame = 3;
+        }
+        window_panel_level.addChild(rightArrow);
+        window_panel_level.addChild(levelThumbsGroup);
     },
     rightarrowClicked: function (button) {
         // touching right arrow and still not reached last page
         if (currentPage < pages - 1) {
-            leftArrow.alpha = 1;
+            leftArrow.frame = 0;
             currentPage++;
             // fade out the button if we reached last page
             if (currentPage == pages - 1) {
-                button.alpha = 0.3;
+                button.frame = 3;
             }
             // scrolling level pages
             var buttonsTween = game.add.tween(levelThumbsGroup);
             buttonsTween.to({
-                x: currentPage * game.width * -1
-            }, 500, Phaser.Easing.Cubic.None);
+                x: currentPage * window_panel_level.width * -1
+            }, 1000, Phaser.Easing.Cubic.None);
             buttonsTween.start();
         }
     },
     leftarrowClicked: function (button) {
         // touching left arrow and still not reached first page
         if (currentPage > 0) {
-            rightArrow.alpha = 1;
+            rightArrow.frame = 2;
             currentPage--;
             // fade out the button if we reached first page
             if (currentPage == 0) {
-                button.alpha = 0.3;
+                button.frame = 1;
             }
             // scrolling level pages
             var buttonsTween = game.add.tween(levelThumbsGroup);
             buttonsTween.to({
-                x: currentPage * game.width * -1
-            }, 400, Phaser.Easing.Cubic.None);
+                x: currentPage * window_panel_level.width * -1
+            }, 1000, Phaser.Easing.Cubic.None);
             buttonsTween.start();
         }
     },
@@ -330,11 +335,16 @@ levelPlay.prototype = {
     create: function () {
         backgroundgradient(game);
         var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
-        var backLevelButton = game.add.button((w - 138) / 2, 0, 'window_title_1', function () {
+        var backLevelButton = game.add.button(w - isize('btn_big_menu_exit_brown').w - 20, 20, 'btn_big_menu_exit_brown', function () {
             game.state.start("LevelSelect");
         });
-        var text0 = game.add.text(40, 5, 'Back', { font: "20px Arial", fill: "#ffffff" });
-        backLevelButton.addChild(text0);
+        var passLevelButton = game.add.button(w - isize('btn_big_arrow_up_brown').w - 100, 20, 'btn_big_arrow_up_brown', function () {
+            game.state.start("LevelSelect");
+            game.global.starsArray[game.global.level] = 3;
+            if (game.global.starsArray[game.global.level + 1] == 4) game.global.starsArray[game.global.level + 1] = 0;
+            game.global.level = game.global.level + 1; // vi chi co 10 bai
+            game.state.start("LevelSelect");
+        });
 
         gridSize = 40;
         levelWidth = 8;

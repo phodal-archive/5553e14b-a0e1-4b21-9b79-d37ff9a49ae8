@@ -46,8 +46,16 @@ var astar = {
   *          astar.heuristics).
   */
   isTurn: function (t, e) {
-      return t.parent ? t.parent.x !== e.x && t.parent.y !== e.y ? !0 : !1 : !1
+      return t.parent ? (((t.parent.x !== e.x) && (t.parent.y !== e.y)) ? !0 : !1) : !1
   },  
+  sumTurn: function (e) {
+      var l = 0;
+      for (u = e, c = []; u.parent;) {
+          l += astar.isTurn(u.parent, u) ? 1 : 0;
+          u = u.parent
+      }
+      return l;
+  },
   search: function(graph, start, end, options, s) {
     graph.cleanDirty();
     options = options || {};
@@ -70,7 +78,11 @@ var astar = {
       // End case -- result has been found, return the traced path.
       if (currentNode === end) {
                 for (var l = 0, u = currentNode, c = []; u.parent;) {
-                    if (l += astar.isTurn(u.parent, u) ? 1 : 0, l > 2) return s ? [] : astar.search(graph, end, start, options, !0);
+                    if (l += astar.isTurn(u.parent, u) ? 1 : 0, l > 2) 
+                    {
+                      debugger;
+                      return s ? [] : astar.search(graph, end, start, options, !0);
+                    }
                     u = u.parent
                 }
         var res = pathTo(currentNode);
@@ -92,9 +104,17 @@ var astar = {
           continue;
         }
 
+        if ((astar.sumTurn(currentNode) + (astar.isTurn(currentNode, neighbor) ? 1 : 0)) > 2) 
+        {
+          var _t = astar.sumTurn(currentNode) + (astar.isTurn(currentNode, neighbor) ? 1 : 0);
+          neighbor.closed = true;
+          graph.markDirty(neighbor);
+          //debugger;
+          continue;
+        }
         // The g score is the shortest distance from start to current node.
         // We need to check if the path we have arrived at this neighbor is the shortest one we have seen yet.
-        var gScore = currentNode.g + neighbor.getCost(currentNode) + astar.isTurn(currentNode, neighbor) ? 1 : 0;
+        var gScore = currentNode.g + neighbor.getCost(currentNode);
         var beenVisited = neighbor.visited;
 
         if (!beenVisited || gScore < neighbor.g) {
@@ -130,7 +150,8 @@ var astar = {
     }
 
     // No result was found - empty array signifies failure to find path.
-    return [];
+    debugger;
+    return s ? [] : astar.search(graph, end, start, options, !0);
   },
   // See list of heuristics: http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
   heuristics: {

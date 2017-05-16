@@ -101,8 +101,8 @@ var astar = {
 
         // The g score is the shortest distance from start to current node.
         // We need to check if the path we have arrived at this neighbor is the shortest one we have seen yet.
-        var gScore = currentNode.g + neighbor.getCost(currentNode) + astar.isTurn(currentNode, neighbor) ? 1 : 0;
         if ((astar.sumTurn(currentNode) + (astar.isTurn(currentNode, neighbor) ? 1 : 0)) > 2) continue;
+        var gScore = currentNode.g + neighbor.getCost(currentNode) + astar.isTurn(currentNode, neighbor) ? 1 : 0;
         var beenVisited = neighbor.visited;
 
         if (!beenVisited || gScore < neighbor.g) {
