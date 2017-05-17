@@ -9,7 +9,7 @@ window.onload = function () {
         y = w.innerHeight || e.clientHeight || g.clientHeight;
     //game = new Phaser.Game(640, Math.round(640 * e.clientHeight / e.clientWidth));
     var l = 3, m = 2, n = 320;
-    game = new Phaser.Game(n * l, n * m);
+    game = new Phaser.Game(Math.round(n * m * e.clientWidth / e.clientHeight), n * m);
     game.state.add("Boot", boot);
     game.state.add("Preload", preload);
     game.state.add("Home", home);
@@ -145,6 +145,11 @@ function backgroundimage(game) {
     var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
     game.add.sprite(0, h - isize('background_scene1').h - isize('background_clouds').h / 2, 'background_clouds');
     game.add.sprite(0, h - isize('background_scene1').h, 'background_scene1');
+    if (w > isize('background_scene1').w)
+    {
+        game.add.sprite(isize('background_scene1').w, h - isize('background_scene1').h - isize('background_clouds').h / 2, 'background_clouds');
+        game.add.sprite(isize('background_scene1').w, h - isize('background_scene1').h, 'background_scene1');
+    }
     game.add.sprite((w - isize('element_rays').w) / 2, -isize('element_board_title').h / 2, 'element_rays');
     game.add.sprite((w - isize('element_ribbon').w) / 2, 130, 'element_ribbon');
     var gametitleboard = game.add.sprite((w - isize('element_board_title').w) / 2, 0, 'element_board_title');
@@ -254,6 +259,13 @@ levelSelect.prototype = {
         }
         // scrolling thumbnails group according to level position
         levelThumbsGroup.x = currentPage * game.width * -1
+
+        var mask = game.add.graphics(0, 0);
+        mask.beginFill(0x000000);
+        mask.drawRect(window_panel_level.x + 10, window_panel_level.y, window_panel_level.width - 20, window_panel_level.height);
+        levelThumbsGroup.mask = mask;
+        
+        window_panel_level.addChild(levelThumbsGroup);
     },
     rightarrowClicked: function (button) {
         // touching right arrow and still not reached last page
@@ -268,7 +280,7 @@ levelSelect.prototype = {
             var buttonsTween = game.add.tween(levelThumbsGroup);
             buttonsTween.to({
                 x: currentPage * game.width * -1
-            }, 500, Phaser.Easing.Cubic.None);
+            }, 1000, Phaser.Easing.Cubic.None);
             buttonsTween.start();
         }
     },
@@ -285,7 +297,7 @@ levelSelect.prototype = {
             var buttonsTween = game.add.tween(levelThumbsGroup);
             buttonsTween.to({
                 x: currentPage * game.width * -1
-            }, 400, Phaser.Easing.Cubic.None);
+            }, 1000, Phaser.Easing.Cubic.None);
             buttonsTween.start();
         }
     },

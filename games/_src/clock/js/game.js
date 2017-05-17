@@ -153,7 +153,7 @@ function backgroundimage(game) {
     game.add.sprite((w - isize('element_rays').w) / 2, -isize('element_board_title').h / 2, 'element_rays');
     game.add.sprite((w - isize('element_ribbon').w) / 2, 130, 'element_ribbon');
     var gametitleboard = game.add.sprite((w - isize('element_board_title').w) / 2, 0, 'element_board_title');
-    var gametitle = game.add.text(0, 95, 'PIKACHU', { font: "32px Arial", fill: "#ffffff" });
+    var gametitle = game.add.text(0, 95, 'CLOCK', { font: "32px Arial", fill: "#ffffff" });
     gametitle.x = gametitleboard.width / 2 - gametitle.width / 2;
     gametitleboard.addChild(gametitle);
 }
@@ -263,6 +263,12 @@ levelSelect.prototype = {
             rightArrow.frame = 3;
         }
         window_panel_level.addChild(rightArrow);
+
+        var mask = game.add.graphics(0, 0);
+        mask.beginFill(0x000000);
+        mask.drawRect(window_panel_level.x + 10, window_panel_level.y, window_panel_level.width - 20, window_panel_level.height);
+        levelThumbsGroup.mask = mask;
+        
         window_panel_level.addChild(levelThumbsGroup);
     },
     rightarrowClicked: function (button) {
