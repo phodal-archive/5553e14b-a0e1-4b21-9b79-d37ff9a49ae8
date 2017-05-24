@@ -24,6 +24,9 @@ window.onload = function () {
     game.state.start("Boot");
 
     game.global = {
+        lives: 10,
+        player: '',
+        totalScore: 0,
         // array with finished levels and stars collected.
         // 0 = playable yet unfinished level
         // 1, 2, 3 = level finished with 1, 2, 3 stars
@@ -69,6 +72,8 @@ preload.prototype = {
         game.load.spritesheet('status_bar_time', 'assets/PNG24@1x/status_bar_time.png', 42, 41);
         game.load.image('element_slider_bg', 'assets/PNG24@1x/element_slider_bg.png');
         game.load.image('element_slider_bar', 'assets/PNG24@1x/element_slider_bar.png');
+        game.load.image('element_small_heart', 'assets/PNG24@1x/element_small_heart.png');
+        game.load.image('element_big_life', 'assets/PNG24@1x/element_big_life.png');
         game.load.spritesheet("btn_medium_arrow_left_right_green_brown", "assets/sprites/btn_medium_arrow_left_right_green_brown.png", 42, 42);
         game.load.spritesheet("element_button_level_full", "assets/sprites/element_button_level_full.png", 53, 57);
         ext_preload_preload(game);
@@ -287,13 +292,30 @@ levelPlay.prototype = {
         var backLevelButton = game.add.button(w - isize('btn_big_menu_exit_brown').w - 20, 20, 'btn_big_menu_exit_brown', function () {
             game.state.start("LevelSelect");
         });
-        var passLevelButton = game.add.button(w - isize('btn_big_arrow_up_brown').w - 100, 20, 'btn_big_arrow_up_brown', function () {
-            game.state.start("LevelSelect");
-            game.global.starsArray[game.global.level] = 3;
-            if (game.global.starsArray[game.global.level + 1] == 4) game.global.starsArray[game.global.level + 1] = 0;
-            game.global.level = game.global.level + 1; // vi chi co 10 bai
-            game.state.start("LevelSelect");
+        var passLevelButton = game.add.button(backLevelButton.x - isize('btn_big_arrow_up_brown').w - 20, 20, 'btn_big_arrow_up_brown', function () {
+            // TEST: pass level
+            // game.state.start("LevelSelect");
+            // game.global.starsArray[game.global.level] = 3;
+            // if (game.global.starsArray[game.global.level + 1] == 4) game.global.starsArray[game.global.level + 1] = 0;
+            // game.global.level = game.global.level + 1; // vi chi co 10 bai
+            // game.state.start("LevelSelect");
+            // TEST: add lives
+            // game.global.lives += 1;
+            // heartBarText.text = game.global.lives;
+            // TEST: save score
+            if (game.global.player == null || game.global.player == undefined || game.global.player == NaN || game.global.player.trim().length < 1) game.global.player = prompt("You win. Please enter your name", "");
+            if (game.global.player != null) {
+                saveScore(game.global.player, game.global.totalScore, game.global.level, function() { alert('finished'); });
+            }
         });
+        var heartBar = game.add.sprite(passLevelButton.x - isize('btn_text_brown').w - 20, 0, "btn_text_brown");
+        var heartBarIcon = game.add.sprite(20, 0, "element_small_heart");
+        heartBar.addChild(heartBarIcon);
+        heartBarIcon.y = (heartBar.height - heartBarIcon.height) / 2;
+        var heartBarText = game.add.text(0, 10, game.global.lives, { font: "22px Arial", fill: "#874f21" });
+        heartBar.addChild(heartBarText);
+        heartBarText.x = heartBar.width / 2 - heartBarText.width / 2;
+        heartBar.y = 20 + (isize('btn_big_arrow_up_brown').h - heartBar.height) / 2;
         var timerContainer = game.add.group();
         timerContainer.add(game.add.sprite(0, 0, 'status_bar_time', 0));
         for (var i = 0; i < 4; i++) {
@@ -303,8 +325,8 @@ levelPlay.prototype = {
         timerContainer.add(game.add.sprite(42, 11, 'element_slider_bg', 0));
         var timerSprite = game.add.sprite(44, 15, 'element_slider_bar', 0);
         timerContainer.add(timerSprite);
-        timerContainer.x = w - isize('btn_big_arrow_up_brown').w * 2 - 100 - timerContainer.width;
-        timerContainer.y = 20 + (isize('btn_big_arrow_up_brown').w - timerContainer.height) / 2;
+        timerContainer.x = heartBar.x - timerContainer.width - 20;
+        timerContainer.y = 20 + (isize('btn_big_arrow_up_brown').h - timerContainer.height) / 2;
         ext_levelPlay_create(game);
         var indicator = new timerBar({
             game: this.game,
@@ -312,7 +334,18 @@ levelPlay.prototype = {
             seconds: 10,
             onComplete: function () {alert('finished');}
         });
-        indicator.start();        
+        indicator.start();
+
+        var lineDiff = 0;
+        if (w < h) { lineDiff = 70; }
+        var levelText = game.add.sprite(20, heartBar.y + lineDiff, "btn_text_brown");
+        var text1 = game.add.text(0, 10, "Level: 1", { font: "22px Arial", fill: "#874f21" });
+        levelText.addChild(text1);
+        text1.x = levelText.width / 2 - text1.width / 2;
+        var scoreText = game.add.sprite(levelText.x + levelText.width + 20, heartBar.y + lineDiff, "btn_text_brown");
+        var text2 = game.add.text(0, 10, "Score: 100", { font: "22px Arial", fill: "#874f21" });
+        scoreText.addChild(text2);
+        text2.x = scoreText.width / 2 - text2.width / 2;
     },
     update: function () {
         ext_levelPlay_update(game);
