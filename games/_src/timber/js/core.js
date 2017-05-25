@@ -81,6 +81,16 @@ function rewardLife() {
 }
 
 function saveScore(player, score, level, callback) {
+// function submit_score(my_score) {
+//     var fd = new FormData();
+//     fd.append("my_score", my_score);
+//     var xhr = new XMLHttpRequest();
+
+//     xhr.open('POST', 'post.php', true);
+//     xhr.send(fd);
+
+// }
+
     NativePlugin.prepareScore(function (data) {
         var d = new Date();
         $.ajax({

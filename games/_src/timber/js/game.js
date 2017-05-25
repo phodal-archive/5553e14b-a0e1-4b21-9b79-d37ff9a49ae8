@@ -19,11 +19,13 @@ window.onload = function () {
     game.state.add("Boot", boot);
     game.state.add("Preload", preload);
     game.state.add("Home", home);
+    game.state.add("ViewHighScore", viewHighScore);
     game.state.add("LevelSelect", levelSelect);
     game.state.add("LevelPlay", levelPlay);
     game.state.start("Boot");
 
     game.global = {
+        lang: 'en',
         lives: 10,
         player: '',
         totalScore: 0,
@@ -69,6 +71,8 @@ preload.prototype = {
         game.load.image("btn_big_arrow_up_brown", "assets/PNG24@1x/btn_big_arrow_up_brown.png");
         game.load.image("btn_big_menu_exit_brown", "assets/PNG24@1x/btn_big_menu_exit_brown.png");
         game.load.image("window_panel_level", "assets/PNG24@1x/window_panel_level.png");
+        game.load.image("window_panel_upgrade", "assets/PNG24@1x/window_panel_upgrade.png");
+        game.load.spritesheet("window_panel_upgrade_sheet", "assets/PNG24@1x/window_panel_upgrade.png", 295, 110);
         game.load.spritesheet('status_bar_time', 'assets/PNG24@1x/status_bar_time.png', 42, 41);
         game.load.image('element_slider_bg', 'assets/PNG24@1x/element_slider_bg.png');
         game.load.image('element_slider_bar', 'assets/PNG24@1x/element_slider_bar.png');
@@ -123,7 +127,7 @@ function homemenu(game) {
     window_panel_main.addChild(playButton);
     playButton.x = window_panel_main.width / 2 - playButton.width / 2;
     var highscoreButton = game.add.button(0, playButton.y + 50, "btn_text_brown", function () {
-        alert("highscore");
+        game.state.start("ViewHighScore");
     });
     var text2 = game.add.text(30, 10, "Highscore", { font: "22px Arial", fill: "#ffffff" });
     highscoreButton.addChild(text2);
@@ -138,6 +142,98 @@ function homemenu(game) {
     text3.x = settingButton.width / 2 - text3.width / 2;
     window_panel_main.addChild(settingButton);
     settingButton.x = window_panel_main.width / 2 - settingButton.width / 2;
+}
+////////////////////////////////////////////////////////////////////////////////
+var viewHighScore = function (game) {
+    var window_panel_upgrade;
+    var arrHighScore;
+    var loadHighScore;
+    var drawHighScore;
+    var pages;
+    var textPlayerNames;
+    var textPlayerScores;
+};
+viewHighScore.prototype = {
+    preload: function () {
+        pages = 0;
+        loadHighScore = false;
+        drawHighScore = false;
+        textPlayerNames = [];
+        textPlayerScores = [];
+        //game.load.json('arrHighScore', 'http://games.songsinh.com/api/score/highscore?start=' + pages * 10 + '&length=10');
+        game.load.json('arrHighScore', 'http://localhost:8001/games/_src/phong/js/highscore0.json');
+    },
+    create: function () {
+        backgroundgradient(game);
+        backgroundimage(game);
+        var w = game.width, h = game.height, w2 = w / 2, h2 = h / 2;
+        var backHomeButton = game.add.button(20, 20, 'btn_big_menu_home_brown', function () {
+            game.state.start("Home");
+        });
+
+        window_panel_upgrade = game.add.sprite((w - isize('window_panel_upgrade').w) / 2, isize('element_rays').h * 2 / 3, 'window_panel_upgrade');
+        try {
+            arrHighScore = game.cache.getJSON('arrHighScore');
+            var color = '';
+            for (var i = 0; i < arrHighScore.length; i++) {
+                if (textPlayerNames[i]) {
+                    textPlayerNames[i].text = arrHighScore[i].Player;
+                    textPlayerScores[i].text = arrHighScore[i].Score;
+                }
+                else {
+                    textPlayerNames[i] = game.add.text(20, 15 + i * 25, arrHighScore[i].Player, { font: "22px Arial", fill: "#ffffff" }); window_panel_upgrade.addChild(textPlayerNames[i]);
+                    textPlayerScores[i] = game.add.text(20 + textPlayerNames[i].width, 15 + i * 25, arrHighScore[i].Score, { font: "25px Arial", fill: "#ffffff" }); window_panel_upgrade.addChild(textPlayerScores[i]);
+                }
+            };
+        }
+        catch (ex) { }
+        loadHighscore = true;
+        var leftArrow = game.add.button(-20, window_panel_upgrade.height / 2 - 20, "btn_medium_arrow_left_right_green_brown", function () {
+            if (pages > 0) {
+                pages--;
+                ajaxData('GET', 'http://localhost:8001/games/_src/phong/js/highscore' + pages + '.json', {}, {}, function (data) {
+                    arrHighScore = data;
+                    var color = '';
+                    for (var i = 0; i < arrHighScore.length; i++) {
+                        if (textPlayerNames[i]) {
+                            textPlayerNames[i].text = arrHighScore[i].Player;
+                            textPlayerScores[i].text = arrHighScore[i].Score;
+                        }
+                        else {
+                            textPlayerNames[i] = game.add.text(20, 15 + i * 25, arrHighScore[i].Player, { font: "22px Arial", fill: "#ffffff" }); window_panel_upgrade.addChild(textPlayerNames[i]);
+                            textPlayerScores[i] = game.add.text(20 + textPlayerNames[i].width, 15 + i * 25, arrHighScore[i].Score, { font: "25px Arial", fill: "#ffffff" }); window_panel_upgrade.addChild(textPlayerScores[i]);
+                        }
+                    };
+                }, function () { alert(getString('txt_gethighscorefailed', game.global.lang)); });
+            }
+        });
+        window_panel_upgrade.addChild(leftArrow);
+        var rightArrow = game.add.button(window_panel_upgrade.width - 20, window_panel_upgrade.height / 2 - 20, "btn_medium_arrow_left_right_green_brown", function () {
+            if (pages < 4) {
+                pages++;
+                fetch('http://localhost:8001/games/_src/phong/js/highscore' + pages + '.json', {method: "GET"}).then(function (response) {
+                    console.log(response.text());
+                }, function (error) {
+                    console.log(error.message);
+                });
+                // ajaxData('GET', 'http://localhost:8001/games/_src/phong/js/highscore' + pages + '.json', {}, {}, function (data) {
+                //     arrHighScore = data;
+                //     var color = '';
+                //     for (var i = 0; i < arrHighScore.length; i++) {
+                //         if (textPlayerNames[i]) {
+                //             textPlayerNames[i].text = arrHighScore[i].Player;
+                //             textPlayerScores[i].text = arrHighScore[i].Score;
+                //         }
+                //         else {
+                //             textPlayerNames[i] = game.add.text(20, 15 + i * 25, arrHighScore[i].Player, { font: "22px Arial", fill: "#ffffff" }); window_panel_upgrade.addChild(textPlayerNames[i]);
+                //             textPlayerScores[i] = game.add.text(20 + textPlayerNames[i].width, 15 + i * 25, arrHighScore[i].Score, { font: "25px Arial", fill: "#ffffff" }); window_panel_upgrade.addChild(textPlayerScores[i]);
+                //         }
+                //     };
+                // }, function () {alert(getString('txt_gethighscorefailed', game.global.lang));});
+            }
+        }); rightArrow.frame = 2;
+        window_panel_upgrade.addChild(rightArrow);
+    }
 }
 ////////////////////////////////////////////////////////////////////////////////
 var levelSelect = function (game) {
@@ -292,23 +388,7 @@ levelPlay.prototype = {
         var backLevelButton = game.add.button(w - isize('btn_big_menu_exit_brown').w - 20, 20, 'btn_big_menu_exit_brown', function () {
             game.state.start("LevelSelect");
         });
-        var passLevelButton = game.add.button(backLevelButton.x - isize('btn_big_arrow_up_brown').w - 20, 20, 'btn_big_arrow_up_brown', function () {
-            // TEST: pass level
-            // game.state.start("LevelSelect");
-            // game.global.starsArray[game.global.level] = 3;
-            // if (game.global.starsArray[game.global.level + 1] == 4) game.global.starsArray[game.global.level + 1] = 0;
-            // game.global.level = game.global.level + 1; // vi chi co 10 bai
-            // game.state.start("LevelSelect");
-            // TEST: add lives
-            // game.global.lives += 1;
-            // heartBarText.text = game.global.lives;
-            // TEST: save score
-            if (game.global.player == null || game.global.player == undefined || game.global.player == NaN || game.global.player.trim().length < 1) game.global.player = prompt("You win. Please enter your name", "");
-            if (game.global.player != null) {
-                saveScore(game.global.player, game.global.totalScore, game.global.level, function() { alert('finished'); });
-            }
-        });
-        var heartBar = game.add.sprite(passLevelButton.x - isize('btn_text_brown').w - 20, 0, "btn_text_brown");
+        var heartBar = game.add.sprite(backLevelButton.x - isize('btn_text_brown').w - 20, 0, "btn_text_brown");
         var heartBarIcon = game.add.sprite(20, 0, "element_small_heart");
         heartBar.addChild(heartBarIcon);
         heartBarIcon.y = (heartBar.height - heartBarIcon.height) / 2;
@@ -332,20 +412,42 @@ levelPlay.prototype = {
             game: this.game,
             sprite: timerSprite,
             seconds: 10,
-            onComplete: function () {alert('finished');}
+            onComplete: function () { alert('finished'); }
         });
         indicator.start();
 
         var lineDiff = 0;
         if (w < h) { lineDiff = 70; }
         var levelText = game.add.sprite(20, heartBar.y + lineDiff, "btn_text_brown");
-        var text1 = game.add.text(0, 10, "Level: 1", { font: "22px Arial", fill: "#874f21" });
+        var text1 = game.add.text(0, 10, "Level: " + game.global.level, { font: "22px Arial", fill: "#874f21" });
         levelText.addChild(text1);
         text1.x = levelText.width / 2 - text1.width / 2;
         var scoreText = game.add.sprite(levelText.x + levelText.width + 20, heartBar.y + lineDiff, "btn_text_brown");
-        var text2 = game.add.text(0, 10, "Score: 100", { font: "22px Arial", fill: "#874f21" });
+        var text2 = game.add.text(0, 10, "Score: " + game.global.totalScore, { font: "22px Arial", fill: "#874f21" });
         scoreText.addChild(text2);
         text2.x = scoreText.width / 2 - text2.width / 2;
+
+        // test functions
+        var testPassLevel = game.add.button(w / 2, h / 2, 'btn_text_brown', function () {
+            game.state.start("LevelSelect");
+            game.global.starsArray[game.global.level] = 3;
+            if (game.global.starsArray[game.global.level + 1] == 4) game.global.starsArray[game.global.level + 1] = 0;
+            game.global.level = game.global.level + 1; // vi chi co 10 bai
+            game.state.start("LevelSelect");
+        });
+        var textPassLevel = game.add.text(0, 15, "PassLevel", { font: "22px Arial", fill: "#874f21" }); testPassLevel.addChild(textPassLevel);
+        var testAddLives = game.add.button(w / 2, testPassLevel.y + 50, 'btn_text_brown', function () {
+            rewardLife();
+            //heartBarText.text = game.global.lives;
+        });
+        var textAddLives = game.add.text(0, 15, "AddLives", { font: "22px Arial", fill: "#874f21" }); testAddLives.addChild(textAddLives);
+        var testSaveScore = game.add.button(w / 2, testAddLives.y + 50, 'btn_text_brown', function () {
+            if (game.global.player == null || game.global.player == undefined || game.global.player == NaN || game.global.player.trim().length < 1) game.global.player = prompt("You win. Please enter your name", "");
+            if (game.global.player != null) {
+                saveScore(game.global.player, game.global.totalScore, game.global.level, function () { alert('finished'); });
+            }
+        });
+        var textSaveScore = game.add.text(0, 15, "SaveScore", { font: "22px Arial", fill: "#874f21" }); testSaveScore.addChild(textSaveScore);
     },
     update: function () {
         ext_levelPlay_update(game);
